@@ -297,7 +297,6 @@ export default function MapPage() {
         <input type="checkbox" checked={autoRefresh} onChange={e => setAutoRefresh(e.target.checked)} style={{ marginRight: 8 }} />
         Atualizar automaticamente
       </label>
-      <button onClick={handleLogout} style={styles.btnLogout}>Sair</button>
     </>
   )
 
@@ -314,6 +313,11 @@ export default function MapPage() {
         </div>
       )}
 
+      <div style={styles.legend}>
+        <span style={styles.legendItem}><span style={{ color: '#ef4444' }}>●</span> Cerca eletrônica</span>
+        <span style={styles.legendItem}><span style={{ color: '#3b82f6' }}>●</span> Histórico</span>
+      </div>
+
       <button onClick={requestLocationNow} style={styles.btnBlue} disabled={requestingLocation}>
         {requestingLocation ? '⏳ Aguardando...' : '📡 Verificar posição agora'}
       </button>
@@ -324,7 +328,7 @@ export default function MapPage() {
         {(['history', 'geofences', 'config'] as const).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             style={{ ...styles.tab, ...(activeTab === tab ? styles.tabActive : {}) }}>
-            {tab === 'history' ? '🗺️ Mapa' : tab === 'geofences' ? '📍 Cercas' : '⚙️'}
+            {tab === 'history' ? '🗺️ Mapa' : tab === 'geofences' ? '📍 Cercas' : '⚙️ Config'}
           </button>
         ))}
       </div>
@@ -334,6 +338,9 @@ export default function MapPage() {
         {activeTab === 'geofences' && tabGeofences}
         {activeTab === 'config' && tabConfig}
       </div>
+
+      <hr style={{ margin: '16px 0', borderColor: '#eee' }} />
+      <button onClick={handleLogout} style={styles.btnLogout}>Sair</button>
     </>
   )
 
@@ -459,6 +466,8 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%',
   },
   mapWrapper: { flex: 1, position: 'relative' },
+  legend: { display: 'flex', gap: 12, marginBottom: 8, fontSize: 12, color: '#555' },
+  legendItem: { display: 'flex', alignItems: 'center', gap: 4 },
   mobileHeader: {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
     padding: '10px 16px', background: '#fff', borderBottom: '1px solid #eee',
