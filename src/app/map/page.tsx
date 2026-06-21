@@ -324,8 +324,10 @@ export default function MapPage() {
             <div style={styles.statusDot} />
             <div>
               <div style={styles.statusLabel}>Última posição</div>
-              <div style={styles.statusTime}>{format(new Date(currentLocation.timestamp), 'dd/MM/yyyy HH:mm:ss')}</div>
-              {currentLocation.battery_level != null && <div style={styles.battery}>🔋 {currentLocation.battery_level}%</div>}
+              <div style={styles.statusTime}>
+                {format(new Date(currentLocation.timestamp), 'dd/MM/yyyy HH:mm:ss')}
+                {currentLocation.battery_level != null && <span style={styles.batteryInline}> 🔋 {currentLocation.battery_level}%</span>}
+              </div>
             </div>
           </div>
           <div style={styles.legend}>
@@ -434,6 +436,7 @@ const styles: Record<string, React.CSSProperties> = {
   statusLabel: { fontSize: 12, color: '#666', fontWeight: 600 },
   statusTime: { fontSize: 13, color: '#333', fontWeight: 500 },
   battery: { fontSize: 12, color: '#666', marginTop: 2 },
+  batteryInline: { fontSize: 12, color: '#666', marginLeft: 6 },
   sectionTitle: { fontSize: 14, fontWeight: 600, color: '#555', marginBottom: 10 },
   label: { fontSize: 12, fontWeight: 600, color: '#666', marginBottom: 4, display: 'block' },
   input: {
