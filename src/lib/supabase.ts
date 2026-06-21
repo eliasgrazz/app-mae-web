@@ -20,6 +20,8 @@ export type Config = {
   id: number
   default_interval_minutes: number
   alarm_duration_seconds: number
+  wifi_ssid: string | null
+  wifi_geofence_id: number | null
 }
 
 export type Geofence = {

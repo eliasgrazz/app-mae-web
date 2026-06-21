@@ -138,6 +138,8 @@ export default function MapPage() {
     await supabase.from('config').update({
       default_interval_minutes: config.default_interval_minutes,
       alarm_duration_seconds: config.alarm_duration_seconds,
+      wifi_ssid: config.wifi_ssid || null,
+      wifi_geofence_id: config.wifi_geofence_id || null,
     }).eq('id', 1)
     alert('Configurações salvas!')
   }
@@ -316,6 +318,26 @@ export default function MapPage() {
               setConfig({ ...config, alarm_duration_seconds: v === '' ? 0 : parseInt(v) })
             }}
             style={styles.input} />
+
+          <hr style={{ margin: '12px 0', borderColor: '#e5e7eb' }} />
+
+          <label style={styles.label}>📶 Rede Wi-Fi (SSID)</label>
+          <input type="text" value={config.wifi_ssid ?? ''}
+            onChange={e => setConfig({ ...config, wifi_ssid: e.target.value })}
+            placeholder="Ex: MinhaRede"
+            style={styles.input} />
+
+          <label style={styles.label}>Cerca associada ao Wi-Fi</label>
+          <select
+            value={config.wifi_geofence_id ?? ''}
+            onChange={e => setConfig({ ...config, wifi_geofence_id: e.target.value ? parseInt(e.target.value) : null })}
+            style={{ ...styles.input, cursor: 'pointer' }}
+          >
+            <option value="">— Nenhuma —</option>
+            {geofences.map(gf => (
+              <option key={gf.id} value={gf.id}>{gf.name} ({gf.tag_local})</option>
+            ))}
+          </select>
 
           <button onClick={saveDefaultInterval} style={styles.btnGreen}>💾 Salvar configurações</button>
         </>
