@@ -304,11 +304,13 @@ export default function MapPage() {
     <>
       {currentLocation && (
         <div style={styles.statusCard}>
-          <div style={styles.statusDot} />
-          <div>
-            <div style={styles.statusLabel}>Última posição</div>
-            <div style={styles.statusTime}>{format(new Date(currentLocation.timestamp), 'dd/MM/yyyy HH:mm:ss')}</div>
-            {currentLocation.battery_level != null && <div style={styles.battery}>🔋 {currentLocation.battery_level}%</div>}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+            <div style={styles.statusDot} />
+            <div>
+              <div style={styles.statusLabel}>Última posição</div>
+              <div style={styles.statusTime}>{format(new Date(currentLocation.timestamp), 'dd/MM/yyyy HH:mm:ss')}</div>
+              {currentLocation.battery_level != null && <div style={styles.battery}>🔋 {currentLocation.battery_level}%</div>}
+            </div>
           </div>
           <div style={styles.legend}>
             <span style={styles.legendItem}><span style={styles.legendDotRed} /><span style={styles.legendText}>Cerca eletrônica</span></span>
@@ -405,7 +407,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   sidebarTitle: { fontSize: 22, fontWeight: 700, marginBottom: 16, color: '#333' },
   statusCard: {
-    display: 'flex', alignItems: 'flex-start', gap: 10,
+    display: 'flex', flexDirection: 'column', gap: 8,
     background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8, padding: 12, marginBottom: 8,
   },
   statusDot: { width: 10, height: 10, borderRadius: '50%', background: '#22c55e', marginTop: 4, flexShrink: 0 },
@@ -468,7 +470,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%',
   },
   mapWrapper: { flex: 1, position: 'relative' },
-  legend: { display: 'flex', gap: 12, marginTop: 8, justifyContent: 'center' },
+  legend: { display: 'flex', gap: 12, justifyContent: 'center', borderTop: '1px solid #86efac', paddingTop: 8 },
   legendItem: { display: 'flex', alignItems: 'center', gap: 6 },
   legendDotRed: { width: 10, height: 10, borderRadius: '50%', background: '#ef4444', flexShrink: 0 },
   legendDotBlue: { width: 10, height: 10, borderRadius: '50%', background: '#3b82f6', flexShrink: 0 },
