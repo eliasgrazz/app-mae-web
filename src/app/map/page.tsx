@@ -314,8 +314,8 @@ export default function MapPage() {
       )}
 
       <div style={styles.legend}>
-        <span style={styles.legendItem}><span style={{ color: '#ef4444' }}>●</span> Cerca eletrônica</span>
-        <span style={styles.legendItem}><span style={{ color: '#3b82f6' }}>●</span> Histórico</span>
+        <span style={styles.legendItem}><span style={styles.legendDotRed} /><span style={styles.legendText}>Cerca eletrônica</span></span>
+        <span style={styles.legendItem}><span style={styles.legendDotBlue} /><span style={styles.legendText}>Histórico</span></span>
       </div>
 
       <button onClick={requestLocationNow} style={styles.btnBlue} disabled={requestingLocation}>
@@ -466,8 +466,11 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%',
   },
   mapWrapper: { flex: 1, position: 'relative' },
-  legend: { display: 'flex', gap: 12, marginBottom: 8, fontSize: 12, color: '#555' },
-  legendItem: { display: 'flex', alignItems: 'center', gap: 4 },
+  legend: { display: 'flex', gap: 12, marginBottom: 8, justifyContent: 'center' },
+  legendItem: { display: 'flex', alignItems: 'center', gap: 6 },
+  legendDotRed: { width: 10, height: 10, borderRadius: '50%', background: '#ef4444', flexShrink: 0 },
+  legendDotBlue: { width: 10, height: 10, borderRadius: '50%', background: '#3b82f6', flexShrink: 0 },
+  legendText: { fontSize: 12, color: '#555', fontWeight: 500 },
   mobileHeader: {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
     padding: '10px 16px', background: '#fff', borderBottom: '1px solid #eee',
