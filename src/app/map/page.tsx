@@ -268,13 +268,19 @@ export default function MapPage() {
           )}
 
           <label style={styles.label}>Raio (metros)</label>
-          <input type="number" min={50} value={editingGeofence.radius_meters ?? 200}
-            onChange={e => setEditingGeofence({ ...editingGeofence, radius_meters: parseInt(e.target.value) || 200 })}
+          <input type="text" inputMode="numeric" value={editingGeofence.radius_meters ?? 200}
+            onChange={e => {
+              const v = e.target.value.replace(/\D/g, '')
+              setEditingGeofence({ ...editingGeofence, radius_meters: v === '' ? 0 : parseInt(v) })
+            }}
             style={styles.input} />
 
           <label style={styles.label}>Intervalo dentro da cerca (minutos)</label>
-          <input type="number" min={1} value={editingGeofence.interval_minutes ?? 5}
-            onChange={e => setEditingGeofence({ ...editingGeofence, interval_minutes: parseInt(e.target.value) || 5 })}
+          <input type="text" inputMode="numeric" value={editingGeofence.interval_minutes ?? 5}
+            onChange={e => {
+              const v = e.target.value.replace(/\D/g, '')
+              setEditingGeofence({ ...editingGeofence, interval_minutes: v === '' ? 0 : parseInt(v) })
+            }}
             style={styles.input} />
 
           <div style={{ display: 'flex', gap: 8 }}>
