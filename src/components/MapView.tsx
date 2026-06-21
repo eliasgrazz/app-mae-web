@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { Location, Geofence } from '@/lib/supabase'
@@ -79,6 +79,9 @@ export default function MapView({ locations, currentLocation, geofences, picking
         <>
           <FlyTo lat={currentLocation.latitude} lng={currentLocation.longitude} />
           <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon} interactive={!pickingGeofence} zIndexOffset={1000}>
+            <Tooltip permanent direction="top" offset={[0, -42]} opacity={1}>
+              {format(new Date(currentLocation.timestamp), "HH:mm", { locale: ptBR })}
+            </Tooltip>
             <Popup>
               <strong>Posição atual</strong><br />
               {format(new Date(currentLocation.timestamp), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
@@ -90,6 +93,9 @@ export default function MapView({ locations, currentLocation, geofences, picking
 
       {!pickingGeofence && locations.slice(0, -1).map(loc => (
         <Marker key={loc.id} position={[loc.latitude, loc.longitude]} icon={historyIcon}>
+          <Tooltip permanent direction="top" offset={[0, -42]} opacity={1}>
+            {format(new Date(loc.timestamp), "HH:mm", { locale: ptBR })}
+          </Tooltip>
           <Popup>
             {loc.tag_local ? (
               <>
