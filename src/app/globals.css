@@ -23,7 +23,7 @@ body {
   box-shadow: none !important;
   color: #000 !important;
   font-weight: bold !important;
-  font-size: 12px !important;
+  font-size: 8px !important;
   padding: 0 !important;
 }
 .leaflet-tooltip::before {

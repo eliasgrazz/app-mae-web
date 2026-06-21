@@ -8,24 +8,20 @@ import type { Location, Geofence } from '@/lib/supabase'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
-delete (L.Icon.Default.prototype as any)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-})
 
-const makeIcon = (color: string) => new L.Icon({
-  iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+const makeIcon = (cssColor: string) => L.divIcon({
+  className: '',
+  html: `<svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12.5 0C5.6 0 0 5.6 0 12.5C0 21.9 12.5 41 12.5 41C12.5 41 25 21.9 25 12.5C25 5.6 19.4 0 12.5 0Z" fill="${cssColor}"/>
+  </svg>`,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
 })
 
-const currentIcon = makeIcon('green')
-const geofenceIcon = makeIcon('red')
-const historyIcon = makeIcon('blue')
+const currentIcon = makeIcon('#22c55e')
+const geofenceIcon = makeIcon('#ef4444')
+const historyIcon = makeIcon('#3b82f6')
 
 function FlyTo({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap()
