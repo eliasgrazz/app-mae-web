@@ -79,7 +79,7 @@ export default function MapView({ locations, currentLocation, config, pickingGeo
       {currentLocation && (
         <>
           <FlyTo lat={currentLocation.latitude} lng={currentLocation.longitude} />
-          <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon}>
+          <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon} interactive={!pickingGeofence}>
             <Popup>
               <strong>Posição atual</strong><br />
               {format(new Date(currentLocation.timestamp), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
@@ -89,7 +89,7 @@ export default function MapView({ locations, currentLocation, config, pickingGeo
         </>
       )}
 
-      {locations.slice(0, -1).map(loc => (
+      {!pickingGeofence && locations.slice(0, -1).map(loc => (
         <Marker key={loc.id} position={[loc.latitude, loc.longitude]}>
           <Popup>
             {format(new Date(loc.timestamp), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
