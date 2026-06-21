@@ -20,6 +20,7 @@ export default function MapPage() {
   const [savingConfig, setSavingConfig] = useState(false)
   const [pickingGeofence, setPickingGeofence] = useState(false)
   const [showConfig, setShowConfig] = useState(false)
+  const [requestingLocation, setRequestingLocation] = useState(false)
 
   const now = new Date()
   const [startDate, setStartDate] = useState(toInputDate(subHours(now, 6)))
@@ -75,6 +76,15 @@ export default function MapPage() {
     return () => clearInterval(interval)
   }, [autoRefresh, fetchCurrent, fetchConfig])
 
+  async function requestLocationNow() {
+    setRequestingLocation(true)
+    await supabase.from('commands').insert({ type: 'send_location_now', status: 'pending' })
+    setTimeout(() => {
+      fetchCurrent()
+      setRequestingLocation(false)
+    }, 35000)
+  }
+
   async function saveConfig() {
     if (!config) return
     setSavingConfig(true)
@@ -121,6 +131,10 @@ export default function MapPage() {
             </div>
           </div>
         )}
+
+        <button onClick={requestLocationNow} style={styles.btnLocation} disabled={requestingLocation}>
+          {requestingLocation ? '⏳ Aguardando resposta...' : '📡 Verificar posição agora'}
+        </button>
 
         <hr style={{ margin: '16px 0', borderColor: '#eee' }} />
 
@@ -282,4 +296,9 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14, fontWeight: 600, cursor: 'pointer',
   },
   mapWrapper: { flex: 1, position: 'relative' },
+  btnLocation: {
+    width: '100%', padding: '10px', background: '#3b82f6',
+    color: '#fff', border: 'none', borderRadius: 8, fontSize: 14,
+    fontWeight: 600, cursor: 'pointer', marginBottom: 8,
+  },
 }
