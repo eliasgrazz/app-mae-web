@@ -436,7 +436,7 @@ const styles: Record<string, React.CSSProperties> = {
   statusLabel: { fontSize: 12, color: '#666', fontWeight: 600 },
   statusTime: { fontSize: 13, color: '#333', fontWeight: 500 },
   battery: { fontSize: 12, color: '#666', marginTop: 2 },
-  batteryInline: { fontSize: 12, color: '#666', marginLeft: 6 },
+  batteryInline: { fontSize: 18, color: '#555', marginLeft: 6 },
   sectionTitle: { fontSize: 14, fontWeight: 600, color: '#555', marginBottom: 10 },
   label: { fontSize: 12, fontWeight: 600, color: '#666', marginBottom: 4, display: 'block' },
   input: {
@@ -457,12 +457,12 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600, cursor: 'pointer', marginBottom: 8,
   },
   btnBlue: {
-    width: '100%', padding: '10px', background: '#3b82f6',
+    width: '100%', padding: '10px', background: '#60a5fa',
     color: '#fff', border: 'none', borderRadius: 8, fontSize: 14,
     fontWeight: 600, cursor: 'pointer', marginBottom: 8,
   },
   btnAlarm: {
-    width: '100%', padding: '10px', background: '#ef4444',
+    width: '100%', padding: '10px', background: '#f87171',
     color: '#fff', border: 'none', borderRadius: 8, fontSize: 14,
     fontWeight: 600, cursor: 'pointer', marginBottom: 8,
   },
