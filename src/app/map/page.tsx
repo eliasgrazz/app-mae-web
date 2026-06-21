@@ -40,7 +40,22 @@ export default function MapPage() {
       .lte('timestamp', new Date(endDate).toISOString())
       .order('timestamp', { ascending: true })
 
-    if (!error && data) setLocations(data as Location[])
+    if (!error && data) {
+      // Para localizações dentro do Local-Casa, mostrar apenas uma por grupo consecutivo
+      const filtered: Location[] = []
+      let lastWasCasa = false
+      for (const loc of data as Location[]) {
+        if (loc.tag_local === 'Casa CXS') {
+          if (!lastWasCasa) filtered.push(loc)
+          else filtered[filtered.length - 1] = loc // substitui pelo mais recente
+          lastWasCasa = true
+        } else {
+          filtered.push(loc)
+          lastWasCasa = false
+        }
+      }
+      setLocations(filtered)
+    }
     setLoading(false)
   }, [startDate, endDate])
 
@@ -163,6 +178,7 @@ export default function MapPage() {
         {/* Configurações */}
         <button onClick={() => setShowConfig(!showConfig)} style={styles.btnToggleConfig}>
           ⚙️ Configurações {showConfig ? '▲' : '▼'}
+
         </button>
 
         {showConfig && config && (
@@ -177,7 +193,7 @@ export default function MapPage() {
             <hr style={{ margin: '12px 0', borderColor: '#eee' }} />
 
             <div style={styles.switchRow}>
-              <label style={styles.label}>Cerca virtual</label>
+              <label style={styles.label}>Local-Casa</label>
               <input
                 type="checkbox" checked={config.geofence_enabled}
                 onChange={e => setConfig({ ...config, geofence_enabled: e.target.checked })}
@@ -206,7 +222,7 @@ export default function MapPage() {
                   style={styles.input}
                 />
 
-                <label style={styles.label}>Intervalo fora da cerca (minutos)</label>
+                <label style={styles.label}>Intervalo fora do Local-Casa (minutos)</label>
                 <input
                   type="number" min={1} value={config.geofence_interval_minutes}
                   onChange={e => setConfig({ ...config, geofence_interval_minutes: parseInt(e.target.value) || 1 })}

@@ -101,7 +101,7 @@ export default function MapView({ locations, currentLocation, config, pickingGeo
       {config?.geofence_lat && config?.geofence_lng && (
         <>
           <Marker position={[config.geofence_lat, config.geofence_lng]} icon={geofenceIcon}>
-            <Popup>Centro da cerca virtual</Popup>
+            <Popup>Centro do Local-Casa</Popup>
           </Marker>
           <Circle
             center={[config.geofence_lat, config.geofence_lng]}

@@ -13,6 +13,7 @@ export type Location = {
   battery_level: number | null
   timestamp: string
   created_at: string
+  tag_local: string | null
 }
 
 export type Config = {
