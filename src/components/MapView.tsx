@@ -12,7 +12,7 @@ import { ptBR } from 'date-fns/locale'
 const makeIcon = (cssColor: string) => L.divIcon({
   className: '',
   html: `<svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12.5 0C5.6 0 0 5.6 0 12.5C0 21.9 12.5 41 12.5 41C12.5 41 25 21.9 25 12.5C25 5.6 19.4 0 12.5 0Z" fill="${cssColor}"/>
+    <path d="M12.5 0C5.6 0 0 5.6 0 12.5C0 21.9 12.5 41 12.5 41C12.5 41 25 21.9 25 12.5C25 5.6 19.4 0 12.5 0Z" fill="${cssColor}" stroke="white" stroke-width="1.5"/>
   </svg>`,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -74,8 +74,8 @@ export default function MapView({ locations, currentLocation, geofences, picking
       {currentLocation && (
         <>
           <FlyTo lat={currentLocation.latitude} lng={currentLocation.longitude} />
-          <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon} interactive={!pickingGeofence} zIndexOffset={1000}>
-            <Tooltip permanent direction="top" offset={[0, -10]} opacity={1}>
+          <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon} interactive={!pickingGeofence} zIndexOffset={2000}>
+            <Tooltip permanent direction="top" offset={[0, -28]} opacity={1}>
               {format(new Date(currentLocation.timestamp), "HH:mm", { locale: ptBR })}
             </Tooltip>
             <Popup>
@@ -88,8 +88,8 @@ export default function MapView({ locations, currentLocation, geofences, picking
       )}
 
       {!pickingGeofence && locations.slice(0, -1).map(loc => (
-        <Marker key={loc.id} position={[loc.latitude, loc.longitude]} icon={historyIcon}>
-          <Tooltip permanent direction="top" offset={[0, -10]} opacity={1}>
+        <Marker key={loc.id} position={[loc.latitude, loc.longitude]} icon={historyIcon} zIndexOffset={500}>
+          <Tooltip permanent direction="top" offset={[0, -28]} opacity={1}>
             {format(new Date(loc.timestamp), "HH:mm", { locale: ptBR })}
           </Tooltip>
           <Popup>
@@ -112,7 +112,7 @@ export default function MapView({ locations, currentLocation, geofences, picking
 
       {geofences.map(gf => (
         <div key={gf.id}>
-          <Marker position={[gf.latitude, gf.longitude]} icon={geofenceIcon}>
+          <Marker position={[gf.latitude, gf.longitude]} icon={geofenceIcon} zIndexOffset={-1000}>
             <Popup>
               <strong>{gf.name}</strong><br />
               Tag: {gf.tag_local}<br />
