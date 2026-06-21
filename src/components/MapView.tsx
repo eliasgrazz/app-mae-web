@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import type { Location, Config } from '@/lib/supabase'
+import type { Location, Geofence } from '@/lib/supabase'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -23,9 +23,9 @@ const makeIcon = (color: string) => new L.Icon({
   popupAnchor: [1, -34],
 })
 
-const currentIcon = makeIcon('green')   // última localização
-const geofenceIcon = makeIcon('red')    // Local-Casa
-const historyIcon = makeIcon('blue')    // outros pontos
+const currentIcon = makeIcon('green')
+const geofenceIcon = makeIcon('red')
+const historyIcon = makeIcon('blue')
 
 function FlyTo({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap()
@@ -35,7 +35,7 @@ function FlyTo({ lat, lng }: { lat: number; lng: number }) {
   return null
 }
 
-function MapClickHandler({ onMapClick, active }: { onMapClick: (lat: number, lng: number) => void, active: boolean }) {
+function MapClickHandler({ onMapClick, active }: { onMapClick: (lat: number, lng: number) => void; active: boolean }) {
   useMapEvents({
     click(e) {
       if (active) onMapClick(e.latlng.lat, e.latlng.lng)
@@ -47,12 +47,12 @@ function MapClickHandler({ onMapClick, active }: { onMapClick: (lat: number, lng
 type Props = {
   locations: Location[]
   currentLocation: Location | null
-  config: Config | null
+  geofences: Geofence[]
   pickingGeofence: boolean
   onMapClick: (lat: number, lng: number) => void
 }
 
-export default function MapView({ locations, currentLocation, config, pickingGeofence, onMapClick }: Props) {
+export default function MapView({ locations, currentLocation, geofences, pickingGeofence, onMapClick }: Props) {
   const center: [number, number] = currentLocation
     ? [currentLocation.latitude, currentLocation.longitude]
     : [-15.8267, -47.9218]
@@ -90,22 +90,28 @@ export default function MapView({ locations, currentLocation, config, pickingGeo
           <Popup>
             {format(new Date(loc.timestamp), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
             {loc.battery_level != null && `Bateria: ${loc.battery_level}%`}
+            {loc.tag_local && <><br />{loc.tag_local}</>}
           </Popup>
         </Marker>
       ))}
 
-      {config?.geofence_lat && config?.geofence_lng && (
-        <>
-          <Marker position={[config.geofence_lat, config.geofence_lng]} icon={geofenceIcon}>
-            <Popup>Centro do Local-Casa</Popup>
+      {geofences.map(gf => (
+        <div key={gf.id}>
+          <Marker position={[gf.latitude, gf.longitude]} icon={geofenceIcon}>
+            <Popup>
+              <strong>{gf.name}</strong><br />
+              Tag: {gf.tag_local}<br />
+              Raio: {gf.radius_meters}m<br />
+              Intervalo: {gf.interval_minutes} min
+            </Popup>
           </Marker>
           <Circle
-            center={[config.geofence_lat, config.geofence_lng]}
-            radius={config.geofence_radius_meters}
-            pathOptions={{ color: config.geofence_enabled ? '#22c55e' : '#aaa', fillOpacity: 0.1 }}
+            center={[gf.latitude, gf.longitude]}
+            radius={gf.radius_meters}
+            pathOptions={{ color: gf.enabled ? '#ef4444' : '#aaa', fillOpacity: 0.1 }}
           />
-        </>
-      )}
+        </div>
+      ))}
     </MapContainer>
   )
 }

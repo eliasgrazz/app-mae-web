@@ -18,10 +18,17 @@ export type Location = {
 
 export type Config = {
   id: number
+  default_interval_minutes: number
+}
+
+export type Geofence = {
+  id: number
+  name: string
+  latitude: number
+  longitude: number
+  radius_meters: number
+  tag_local: string
   interval_minutes: number
-  geofence_enabled: boolean
-  geofence_lat: number | null
-  geofence_lng: number | null
-  geofence_radius_meters: number
-  geofence_interval_minutes: number
+  enabled: boolean
+  created_at: string
 }
