@@ -15,21 +15,17 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 })
 
-const currentIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+const makeIcon = (color: string) => new L.Icon({
+  iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
 })
 
-const geofenceIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-})
+const currentIcon = makeIcon('green')   // última localização
+const geofenceIcon = makeIcon('red')    // Local-Casa
+const historyIcon = makeIcon('blue')    // outros pontos
 
 function FlyTo({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap()
@@ -90,7 +86,7 @@ export default function MapView({ locations, currentLocation, config, pickingGeo
       )}
 
       {!pickingGeofence && locations.slice(0, -1).map(loc => (
-        <Marker key={loc.id} position={[loc.latitude, loc.longitude]}>
+        <Marker key={loc.id} position={[loc.latitude, loc.longitude]} icon={historyIcon}>
           <Popup>
             {format(new Date(loc.timestamp), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
             {loc.battery_level != null && `Bateria: ${loc.battery_level}%`}
