@@ -75,7 +75,7 @@ export default function MapView({ locations, currentLocation, geofences, picking
         <>
           <FlyTo lat={currentLocation.latitude} lng={currentLocation.longitude} />
           <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon} interactive={!pickingGeofence} zIndexOffset={2000}>
-            <Tooltip permanent direction="top" offset={[0, 10]} opacity={1}>
+            <Tooltip permanent direction="top" offset={[0, -18]} opacity={1}>
               {format(new Date(currentLocation.timestamp), "HH:mm", { locale: ptBR })}
             </Tooltip>
             <Popup>
@@ -89,7 +89,7 @@ export default function MapView({ locations, currentLocation, geofences, picking
 
       {!pickingGeofence && locations.slice(0, -1).map(loc => (
         <Marker key={loc.id} position={[loc.latitude, loc.longitude]} icon={historyIcon} zIndexOffset={500}>
-          <Tooltip permanent direction="top" offset={[0, 10]} opacity={1}>
+          <Tooltip permanent direction="top" offset={[0, -18]} opacity={1}>
             {format(new Date(loc.timestamp), "HH:mm", { locale: ptBR })}
           </Tooltip>
           <Popup>
