@@ -21,10 +21,19 @@ export default function MapPage() {
   const [pickingGeofence, setPickingGeofence] = useState(false)
   const [showConfig, setShowConfig] = useState(false)
   const [requestingLocation, setRequestingLocation] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [showPanel, setShowPanel] = useState(false)
 
   const now = new Date()
   const [startDate, setStartDate] = useState(toInputDate(subHours(now, 6)))
   const [endDate, setEndDate] = useState(toInputDate(now))
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   async function checkAuth() {
     const { data } = await supabase.auth.getSession()
@@ -41,13 +50,12 @@ export default function MapPage() {
       .order('timestamp', { ascending: true })
 
     if (!error && data) {
-      // Para localizações dentro do Local-Casa, mostrar apenas uma por grupo consecutivo
       const filtered: Location[] = []
       let lastWasCasa = false
       for (const loc of data as Location[]) {
         if (loc.tag_local === 'Casa CXS') {
           if (!lastWasCasa) filtered.push(loc)
-          else filtered[filtered.length - 1] = loc // substitui pelo mais recente
+          else filtered[filtered.length - 1] = loc
           lastWasCasa = true
         } else {
           filtered.push(loc)
@@ -66,7 +74,6 @@ export default function MapPage() {
       .order('timestamp', { ascending: false })
       .limit(1)
       .single()
-
     if (data) setCurrentLocation(data as Location)
   }, [])
 
@@ -127,126 +134,158 @@ export default function MapPage() {
     router.push('/')
   }
 
+  const controls = (
+    <>
+      {currentLocation && (
+        <div style={styles.statusCard}>
+          <div style={styles.statusDot} />
+          <div>
+            <div style={styles.statusLabel}>Última posição</div>
+            <div style={styles.statusTime}>
+              {format(new Date(currentLocation.timestamp), 'dd/MM/yyyy HH:mm:ss')}
+            </div>
+            {currentLocation.battery_level != null && (
+              <div style={styles.battery}>🔋 {currentLocation.battery_level}%</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <button onClick={requestLocationNow} style={styles.btnLocation} disabled={requestingLocation}>
+        {requestingLocation ? '⏳ Aguardando...' : '📡 Verificar posição agora'}
+      </button>
+
+      <hr style={{ margin: '12px 0', borderColor: '#eee' }} />
+
+      <h3 style={styles.sectionTitle}>Filtrar histórico</h3>
+      <label style={styles.label}>De</label>
+      <input type="datetime-local" value={startDate} onChange={e => setStartDate(e.target.value)} style={styles.input} />
+      <label style={styles.label}>Até</label>
+      <input type="datetime-local" value={endDate} onChange={e => setEndDate(e.target.value)} style={styles.input} />
+      <button onClick={fetchLocations} style={styles.btnSearch} disabled={loading}>
+        {loading ? 'Buscando...' : '🔍 Buscar trajeto'}
+      </button>
+      <div style={styles.countInfo}>{locations.length} pontos encontrados</div>
+      <div style={styles.quickFilters}>
+        <span style={styles.quickLabel}>Atalhos:</span>
+        {[1, 6, 24].map(h => (
+          <button key={h} style={styles.quickBtn} onClick={() => {
+            setStartDate(toInputDate(subHours(new Date(), h)))
+            setEndDate(toInputDate(new Date()))
+          }}>{h}h</button>
+        ))}
+      </div>
+
+      <hr style={{ margin: '12px 0', borderColor: '#eee' }} />
+
+      <button onClick={() => setShowConfig(!showConfig)} style={styles.btnToggleConfig}>
+        ⚙️ Configurações {showConfig ? '▲' : '▼'}
+      </button>
+
+      {showConfig && config && (
+        <div style={styles.configPanel}>
+          <label style={styles.label}>Intervalo normal (minutos)</label>
+          <input
+            type="number" min={1} value={config.interval_minutes}
+            onChange={e => setConfig({ ...config, interval_minutes: parseInt(e.target.value) || 1 })}
+            style={styles.input}
+          />
+          <hr style={{ margin: '12px 0', borderColor: '#eee' }} />
+          <div style={styles.switchRow}>
+            <label style={styles.label}>Local-Casa</label>
+            <input
+              type="checkbox" checked={config.geofence_enabled}
+              onChange={e => setConfig({ ...config, geofence_enabled: e.target.checked })}
+            />
+          </div>
+          {config.geofence_enabled && (
+            <>
+              <button
+                onClick={() => setPickingGeofence(true)}
+                style={{ ...styles.btnSearch, background: pickingGeofence ? '#f59e0b' : '#22c55e', marginBottom: 8 }}
+              >
+                {pickingGeofence ? '🖱️ Clique no mapa...' : '📍 Definir centro no mapa'}
+              </button>
+              {config.geofence_lat && (
+                <div style={styles.countInfo}>
+                  Centro: {config.geofence_lat.toFixed(5)}, {config.geofence_lng?.toFixed(5)}
+                </div>
+              )}
+              <label style={styles.label}>Raio (metros)</label>
+              <input
+                type="number" min={50} value={config.geofence_radius_meters}
+                onChange={e => setConfig({ ...config, geofence_radius_meters: parseInt(e.target.value) || 500 })}
+                style={styles.input}
+              />
+              <label style={styles.label}>Intervalo fora do Local-Casa (minutos)</label>
+              <input
+                type="number" min={1} value={config.geofence_interval_minutes}
+                onChange={e => setConfig({ ...config, geofence_interval_minutes: parseInt(e.target.value) || 1 })}
+                style={styles.input}
+              />
+            </>
+          )}
+          <button onClick={saveConfig} style={styles.btnSave} disabled={savingConfig}>
+            {savingConfig ? 'Salvando...' : '💾 Salvar configurações'}
+          </button>
+        </div>
+      )}
+
+      <hr style={{ margin: '12px 0', borderColor: '#eee' }} />
+
+      <label style={styles.autoRefreshLabel}>
+        <input type="checkbox" checked={autoRefresh} onChange={e => setAutoRefresh(e.target.checked)} style={{ marginRight: 8 }} />
+        Atualizar automaticamente
+      </label>
+
+      <button onClick={handleLogout} style={styles.btnLogout}>Sair</button>
+    </>
+  )
+
+  if (isMobile) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        {/* Cabeçalho fixo */}
+        <div style={styles.mobileHeader}>
+          <span style={styles.mobileTitle}>App Mãe</span>
+          {currentLocation && (
+            <span style={styles.mobileStatus}>
+              🟢 {format(new Date(currentLocation.timestamp), 'HH:mm')}
+              {currentLocation.battery_level != null && `  🔋${currentLocation.battery_level}%`}
+            </span>
+          )}
+          <button onClick={() => setShowPanel(!showPanel)} style={styles.mobileMenuBtn}>
+            {showPanel ? '✕' : '☰'}
+          </button>
+        </div>
+
+        {/* Mapa */}
+        <div style={{ flex: 1, position: 'relative' }}>
+          <MapView
+            locations={locations}
+            currentLocation={currentLocation}
+            config={config}
+            pickingGeofence={pickingGeofence}
+            onMapClick={handleMapClick}
+          />
+        </div>
+
+        {/* Painel deslizante */}
+        {showPanel && (
+          <div style={styles.mobilePanel}>
+            {controls}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div style={styles.wrapper}>
       <div style={styles.sidebar}>
         <h2 style={styles.sidebarTitle}>App Mãe</h2>
-
-        {currentLocation && (
-          <div style={styles.statusCard}>
-            <div style={styles.statusDot} />
-            <div>
-              <div style={styles.statusLabel}>Última posição</div>
-              <div style={styles.statusTime}>
-                {format(new Date(currentLocation.timestamp), 'dd/MM/yyyy HH:mm:ss')}
-              </div>
-              {currentLocation.battery_level != null && (
-                <div style={styles.battery}>🔋 {currentLocation.battery_level}%</div>
-              )}
-            </div>
-          </div>
-        )}
-
-        <button onClick={requestLocationNow} style={styles.btnLocation} disabled={requestingLocation}>
-          {requestingLocation ? '⏳ Aguardando resposta...' : '📡 Verificar posição agora'}
-        </button>
-
-        <hr style={{ margin: '16px 0', borderColor: '#eee' }} />
-
-        {/* Filtro de histórico */}
-        <h3 style={styles.sectionTitle}>Filtrar histórico</h3>
-        <label style={styles.label}>De</label>
-        <input type="datetime-local" value={startDate} onChange={e => setStartDate(e.target.value)} style={styles.input} />
-        <label style={styles.label}>Até</label>
-        <input type="datetime-local" value={endDate} onChange={e => setEndDate(e.target.value)} style={styles.input} />
-        <button onClick={fetchLocations} style={styles.btnSearch} disabled={loading}>
-          {loading ? 'Buscando...' : '🔍 Buscar trajeto'}
-        </button>
-        <div style={styles.countInfo}>{locations.length} pontos encontrados</div>
-        <div style={styles.quickFilters}>
-          <span style={styles.quickLabel}>Atalhos:</span>
-          {[1, 6, 24].map(h => (
-            <button key={h} style={styles.quickBtn} onClick={() => {
-              setStartDate(toInputDate(subHours(new Date(), h)))
-              setEndDate(toInputDate(new Date()))
-            }}>{h}h</button>
-          ))}
-        </div>
-
-        <hr style={{ margin: '16px 0', borderColor: '#eee' }} />
-
-        {/* Configurações */}
-        <button onClick={() => setShowConfig(!showConfig)} style={styles.btnToggleConfig}>
-          ⚙️ Configurações {showConfig ? '▲' : '▼'}
-
-        </button>
-
-        {showConfig && config && (
-          <div style={styles.configPanel}>
-            <label style={styles.label}>Intervalo normal (minutos)</label>
-            <input
-              type="number" min={1} value={config.interval_minutes}
-              onChange={e => setConfig({ ...config, interval_minutes: parseInt(e.target.value) || 1 })}
-              style={styles.input}
-            />
-
-            <hr style={{ margin: '12px 0', borderColor: '#eee' }} />
-
-            <div style={styles.switchRow}>
-              <label style={styles.label}>Local-Casa</label>
-              <input
-                type="checkbox" checked={config.geofence_enabled}
-                onChange={e => setConfig({ ...config, geofence_enabled: e.target.checked })}
-              />
-            </div>
-
-            {config.geofence_enabled && (
-              <>
-                <button
-                  onClick={() => setPickingGeofence(true)}
-                  style={{ ...styles.btnSearch, background: pickingGeofence ? '#f59e0b' : '#22c55e', marginBottom: 8 }}
-                >
-                  {pickingGeofence ? '🖱️ Clique no mapa...' : '📍 Definir centro no mapa'}
-                </button>
-
-                {config.geofence_lat && (
-                  <div style={styles.countInfo}>
-                    Centro: {config.geofence_lat.toFixed(5)}, {config.geofence_lng?.toFixed(5)}
-                  </div>
-                )}
-
-                <label style={styles.label}>Raio (metros)</label>
-                <input
-                  type="number" min={50} value={config.geofence_radius_meters}
-                  onChange={e => setConfig({ ...config, geofence_radius_meters: parseInt(e.target.value) || 500 })}
-                  style={styles.input}
-                />
-
-                <label style={styles.label}>Intervalo fora do Local-Casa (minutos)</label>
-                <input
-                  type="number" min={1} value={config.geofence_interval_minutes}
-                  onChange={e => setConfig({ ...config, geofence_interval_minutes: parseInt(e.target.value) || 1 })}
-                  style={styles.input}
-                />
-              </>
-            )}
-
-            <button onClick={saveConfig} style={styles.btnSave} disabled={savingConfig}>
-              {savingConfig ? 'Salvando...' : '💾 Salvar configurações'}
-            </button>
-          </div>
-        )}
-
-        <hr style={{ margin: '16px 0', borderColor: '#eee' }} />
-
-        <label style={styles.autoRefreshLabel}>
-          <input type="checkbox" checked={autoRefresh} onChange={e => setAutoRefresh(e.target.checked)} style={{ marginRight: 8 }} />
-          Atualizar automaticamente
-        </label>
-
-        <button onClick={handleLogout} style={styles.btnLogout}>Sair</button>
+        {controls}
       </div>
-
       <div style={styles.mapWrapper}>
         <MapView
           locations={locations}
@@ -270,7 +309,7 @@ const styles: Record<string, React.CSSProperties> = {
   sidebarTitle: { fontSize: 22, fontWeight: 700, marginBottom: 16, color: '#333' },
   statusCard: {
     display: 'flex', alignItems: 'flex-start', gap: 10,
-    background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8, padding: 12,
+    background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8, padding: 12, marginBottom: 8,
   },
   statusDot: { width: 10, height: 10, borderRadius: '50%', background: '#22c55e', marginTop: 4, flexShrink: 0 },
   statusLabel: { fontSize: 12, color: '#666', fontWeight: 600 },
@@ -316,5 +355,21 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%', padding: '10px', background: '#3b82f6',
     color: '#fff', border: 'none', borderRadius: 8, fontSize: 14,
     fontWeight: 600, cursor: 'pointer', marginBottom: 8,
+  },
+  mobileHeader: {
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '10px 16px', background: '#fff', borderBottom: '1px solid #eee',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.06)', zIndex: 10, flexShrink: 0,
+  },
+  mobileTitle: { fontSize: 18, fontWeight: 700, color: '#333' },
+  mobileStatus: { fontSize: 12, color: '#555' },
+  mobileMenuBtn: {
+    fontSize: 20, background: 'none', border: 'none', cursor: 'pointer', color: '#333', padding: '4px 8px',
+  },
+  mobilePanel: {
+    position: 'absolute', bottom: 0, left: 0, right: 0,
+    background: '#fff', borderTop: '1px solid #eee',
+    padding: '16px', overflowY: 'auto', maxHeight: '60vh',
+    boxShadow: '0 -4px 12px rgba(0,0,0,0.1)', zIndex: 1000,
   },
 }
