@@ -75,7 +75,7 @@ export default function MapView({ locations, currentLocation, geofences, picking
       {currentLocation && (
         <>
           <FlyTo lat={currentLocation.latitude} lng={currentLocation.longitude} />
-          <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon} interactive={!pickingGeofence}>
+          <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon} interactive={!pickingGeofence} zIndexOffset={1000}>
             <Popup>
               <strong>Posição atual</strong><br />
               {format(new Date(currentLocation.timestamp), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
