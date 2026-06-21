@@ -19,6 +19,7 @@ export type Location = {
 export type Config = {
   id: number
   default_interval_minutes: number
+  alarm_duration_seconds: number
 }
 
 export type Geofence = {

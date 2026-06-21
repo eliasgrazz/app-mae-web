@@ -135,8 +135,11 @@ export default function MapPage() {
 
   async function saveDefaultInterval() {
     if (!config) return
-    await supabase.from('config').update({ default_interval_minutes: config.default_interval_minutes }).eq('id', 1)
-    alert('Intervalo padrão salvo!')
+    await supabase.from('config').update({
+      default_interval_minutes: config.default_interval_minutes,
+      alarm_duration_seconds: config.alarm_duration_seconds,
+    }).eq('id', 1)
+    alert('Configurações salvas!')
   }
 
   function handleMapClick(lat: number, lng: number) {
@@ -292,11 +295,17 @@ export default function MapPage() {
       <h3 style={styles.sectionTitle}>Configurações</h3>
       {config && (
         <>
-          <label style={styles.label}>Intervalo padrão (minutos)</label>
+          <label style={styles.label}>Intervalo padrão de GPS (minutos)</label>
           <input type="number" min={1} value={config.default_interval_minutes}
             onChange={e => setConfig({ ...config, default_interval_minutes: parseInt(e.target.value) || 1 })}
             style={styles.input} />
-          <button onClick={saveDefaultInterval} style={styles.btnGreen}>💾 Salvar intervalo padrão</button>
+
+          <label style={styles.label}>Duração do alarme de chamada (segundos)</label>
+          <input type="number" min={5} max={300} value={config.alarm_duration_seconds ?? 30}
+            onChange={e => setConfig({ ...config, alarm_duration_seconds: parseInt(e.target.value) || 30 })}
+            style={styles.input} />
+
+          <button onClick={saveDefaultInterval} style={styles.btnGreen}>💾 Salvar configurações</button>
         </>
       )}
       <hr style={{ margin: '16px 0', borderColor: '#eee' }} />
