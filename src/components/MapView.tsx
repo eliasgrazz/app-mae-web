@@ -88,9 +88,19 @@ export default function MapView({ locations, currentLocation, geofences, picking
       {!pickingGeofence && locations.slice(0, -1).map(loc => (
         <Marker key={loc.id} position={[loc.latitude, loc.longitude]} icon={historyIcon}>
           <Popup>
-            {format(new Date(loc.timestamp), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
-            {loc.battery_level != null && `Bateria: ${loc.battery_level}%`}
-            {loc.tag_local && <><br />{loc.tag_local}</>}
+            {loc.tag_local ? (
+              <>
+                <strong>{loc.tag_local}</strong><br />
+                🟢 Entrada: {format(new Date(loc.created_at), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
+                🔴 Saída: {format(new Date(loc.timestamp), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
+                {loc.battery_level != null && `🔋 Bateria: ${loc.battery_level}%`}
+              </>
+            ) : (
+              <>
+                {format(new Date(loc.timestamp), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
+                {loc.battery_level != null && `🔋 Bateria: ${loc.battery_level}%`}
+              </>
+            )}
           </Popup>
         </Marker>
       ))}
