@@ -297,12 +297,18 @@ export default function MapPage() {
         <>
           <label style={styles.label}>Intervalo padrão de GPS (minutos)</label>
           <input type="text" inputMode="numeric" value={config.default_interval_minutes}
-            onChange={e => setConfig({ ...config, default_interval_minutes: parseInt(e.target.value) || 1 })}
+            onChange={e => {
+              const v = e.target.value.replace(/\D/g, '')
+              setConfig({ ...config, default_interval_minutes: v === '' ? 0 : parseInt(v) })
+            }}
             style={styles.input} />
 
           <label style={styles.label}>Duração do alarme de chamada (segundos)</label>
           <input type="text" inputMode="numeric" value={config.alarm_duration_seconds ?? 30}
-            onChange={e => setConfig({ ...config, alarm_duration_seconds: parseInt(e.target.value) || 30 })}
+            onChange={e => {
+              const v = e.target.value.replace(/\D/g, '')
+              setConfig({ ...config, alarm_duration_seconds: v === '' ? 0 : parseInt(v) })
+            }}
             style={styles.input} />
 
           <button onClick={saveDefaultInterval} style={styles.btnGreen}>💾 Salvar configurações</button>
