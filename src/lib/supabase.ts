@@ -14,3 +14,13 @@ export type Location = {
   timestamp: string
   created_at: string
 }
+
+export type Config = {
+  id: number
+  interval_minutes: number
+  geofence_enabled: boolean
+  geofence_lat: number | null
+  geofence_lng: number | null
+  geofence_radius_meters: number
+  geofence_interval_minutes: number
+}
