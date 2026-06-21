@@ -296,12 +296,12 @@ export default function MapPage() {
       {config && (
         <>
           <label style={styles.label}>Intervalo padrão de GPS (minutos)</label>
-          <input type="number" min={1} value={config.default_interval_minutes}
+          <input type="text" inputMode="numeric" value={config.default_interval_minutes}
             onChange={e => setConfig({ ...config, default_interval_minutes: parseInt(e.target.value) || 1 })}
             style={styles.input} />
 
           <label style={styles.label}>Duração do alarme de chamada (segundos)</label>
-          <input type="number" min={5} max={300} value={config.alarm_duration_seconds ?? 30}
+          <input type="text" inputMode="numeric" value={config.alarm_duration_seconds ?? 30}
             onChange={e => setConfig({ ...config, alarm_duration_seconds: parseInt(e.target.value) || 30 })}
             style={styles.input} />
 
