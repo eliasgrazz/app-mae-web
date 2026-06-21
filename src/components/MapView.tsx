@@ -53,7 +53,10 @@ type Props = {
 }
 
 export default function MapView({ locations, currentLocation, geofences, pickingGeofence, onMapClick }: Props) {
-  const center: [number, number] = currentLocation
+  const casaGeofence = geofences.find(g => g.name.toLowerCase().includes('casa')) ?? geofences[0]
+  const center: [number, number] = casaGeofence
+    ? [casaGeofence.latitude, casaGeofence.longitude]
+    : currentLocation
     ? [currentLocation.latitude, currentLocation.longitude]
     : [-15.8267, -47.9218]
 
