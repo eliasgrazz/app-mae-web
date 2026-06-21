@@ -381,9 +381,27 @@ export default function MapPage() {
               {currentLocation.battery_level != null && `  🔋${currentLocation.battery_level}%`}
             </span>
           )}
-          <button onClick={() => setShowPanel(!showPanel)} style={styles.mobileMenuBtn}>
-            {showPanel ? '✕' : '☰'}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <button
+              onClick={requestLocationNow}
+              disabled={requestingLocation}
+              style={styles.mobileIconBtn}
+              title="Verificar Posição Agora"
+            >
+              {requestingLocation ? '⏳' : '📡'}
+            </button>
+            <button
+              onClick={triggerAlarm}
+              disabled={triggeringAlarm}
+              style={styles.mobileIconBtn}
+              title="Alarme de Chamada"
+            >
+              {triggeringAlarm ? '⏳' : '🔔'}
+            </button>
+            <button onClick={() => setShowPanel(!showPanel)} style={styles.mobileMenuBtn}>
+              {showPanel ? '✕' : '☰'}
+            </button>
+          </div>
         </div>
         <div style={{ flex: 1, position: 'relative' }}>
           <MapView
@@ -511,6 +529,7 @@ const styles: Record<string, React.CSSProperties> = {
   mobileTitle: { fontSize: 18, fontWeight: 700, color: '#333' },
   mobileStatus: { fontSize: 12, color: '#555' },
   mobileMenuBtn: { fontSize: 20, background: 'none', border: 'none', cursor: 'pointer', color: '#333', padding: '4px 8px' },
+  mobileIconBtn: { fontSize: 22, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px' },
   mobilePanel: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
     background: '#fff', borderTop: '1px solid #eee',
