@@ -29,6 +29,7 @@ export default function MapPage() {
   const [config, setConfig] = useState<Config | null>(null)
   const [geofences, setGeofences] = useState<Geofence[]>([])
   const [requestingLocation, setRequestingLocation] = useState(false)
+  const [triggeringAlarm, setTriggeringAlarm] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [showPanel, setShowPanel] = useState(false)
   const [activeTab, setActiveTab] = useState<'history' | 'geofences' | 'config'>('history')
@@ -124,6 +125,12 @@ export default function MapPage() {
       fetchCurrent()
       setRequestingLocation(false)
     }, 35000)
+  }
+
+  async function triggerAlarm() {
+    setTriggeringAlarm(true)
+    await supabase.from('commands').insert({ type: 'play_alarm', status: 'pending' })
+    setTimeout(() => setTriggeringAlarm(false), 35000)
   }
 
   async function saveDefaultInterval() {
@@ -323,7 +330,11 @@ export default function MapPage() {
       </div>
 
       <button onClick={requestLocationNow} style={styles.btnBlue} disabled={requestingLocation}>
-        {requestingLocation ? '⏳ Aguardando...' : '📡 Verificar posição agora'}
+        {requestingLocation ? '⏳ Aguardando...' : '📡 Verificar Posição Agora'}
+      </button>
+
+      <button onClick={triggerAlarm} style={styles.btnAlarm} disabled={triggeringAlarm}>
+        {triggeringAlarm ? '⏳ Aguardando...' : '🔔 Alarme de Chamada'}
       </button>
 
       <hr style={{ margin: '12px 0', borderColor: '#eee' }} />
@@ -435,6 +446,11 @@ const styles: Record<string, React.CSSProperties> = {
   },
   btnBlue: {
     width: '100%', padding: '10px', background: '#3b82f6',
+    color: '#fff', border: 'none', borderRadius: 8, fontSize: 14,
+    fontWeight: 600, cursor: 'pointer', marginBottom: 8,
+  },
+  btnAlarm: {
+    width: '100%', padding: '10px', background: '#ef4444',
     color: '#fff', border: 'none', borderRadius: 8, fontSize: 14,
     fontWeight: 600, cursor: 'pointer', marginBottom: 8,
   },
