@@ -310,12 +310,14 @@ export default function MapPage() {
             <div style={styles.statusTime}>{format(new Date(currentLocation.timestamp), 'dd/MM/yyyy HH:mm:ss')}</div>
             {currentLocation.battery_level != null && <div style={styles.battery}>🔋 {currentLocation.battery_level}%</div>}
           </div>
+          <div style={styles.legend}>
+            <span style={styles.legendItem}><span style={styles.legendDotRed} /><span style={styles.legendText}>Cerca eletrônica</span></span>
+            <span style={styles.legendItem}><span style={styles.legendDotBlue} /><span style={styles.legendText}>Histórico</span></span>
+          </div>
         </div>
       )}
 
-      <div style={styles.legend}>
-        <span style={styles.legendItem}><span style={styles.legendDotRed} /><span style={styles.legendText}>Cerca eletrônica</span></span>
-        <span style={styles.legendItem}><span style={styles.legendDotBlue} /><span style={styles.legendText}>Histórico</span></span>
+      <div style={{ display: 'none' }}>
       </div>
 
       <button onClick={requestLocationNow} style={styles.btnBlue} disabled={requestingLocation}>
@@ -466,7 +468,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%',
   },
   mapWrapper: { flex: 1, position: 'relative' },
-  legend: { display: 'flex', gap: 12, marginBottom: 8, justifyContent: 'center' },
+  legend: { display: 'flex', gap: 12, marginTop: 8, justifyContent: 'center' },
   legendItem: { display: 'flex', alignItems: 'center', gap: 6 },
   legendDotRed: { width: 10, height: 10, borderRadius: '50%', background: '#ef4444', flexShrink: 0 },
   legendDotBlue: { width: 10, height: 10, borderRadius: '50%', background: '#3b82f6', flexShrink: 0 },
