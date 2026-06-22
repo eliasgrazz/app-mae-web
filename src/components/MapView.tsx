@@ -115,9 +115,6 @@ export default function MapView({ locations, currentLocation, geofences, picking
       {geofences.map(gf => (
         <div key={gf.id}>
           <Marker position={[gf.latitude, gf.longitude]} icon={geofenceIcon} zIndexOffset={-1000}>
-              <Tooltip permanent direction="top" offset={[0, -18]} opacity={1}>
-                {gf.name}
-              </Tooltip>
             <Popup>
               <strong>{gf.name}</strong><br />
               Tag: {gf.tag_local}<br />
