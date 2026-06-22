@@ -55,13 +55,13 @@ export default function MapPage() {
     if (!data.session) router.push('/')
   }
 
-  const fetchLocations = useCallback(async () => {
+  const fetchLocations = useCallback(async (overrideStart?: string, overrideEnd?: string) => {
     setLoading(true)
     const { data, error } = await supabase
       .from('locations')
       .select('*')
-      .gte('timestamp', new Date(startDate).toISOString())
-      .lte('timestamp', new Date(endDate).toISOString())
+      .gte('timestamp', new Date(overrideStart ?? startDate).toISOString())
+      .lte('timestamp', new Date(overrideEnd ?? endDate).toISOString())
       .order('timestamp', { ascending: true })
 
     if (!error && data) {
@@ -204,10 +204,15 @@ export default function MapPage() {
       <div style={styles.countInfo}>{locations.length} pontos encontrados</div>
       <div style={styles.quickFilters}>
         <span style={styles.quickLabel}>Atalhos:</span>
-        {[1, 6, 24].map(h => (
+        {[2, 6, 12, 24].map(h => (
           <button key={h} style={styles.quickBtn} onClick={() => {
-            setStartDate(toInputDate(subHours(new Date(), h)))
-            setEndDate(toInputDate(new Date()))
+            const end = new Date()
+            const start = subHours(end, h)
+            const s = toInputDate(start)
+            const e = toInputDate(end)
+            setStartDate(s)
+            setEndDate(e)
+            fetchLocations(s, e)
           }}>{h}h</button>
         ))}
       </div>
