@@ -198,7 +198,7 @@ export default function MapPage() {
       <input type="datetime-local" value={startDate} onChange={e => setStartDate(e.target.value)} style={styles.input} />
       <label style={styles.label}>Até</label>
       <input type="datetime-local" value={endDate} onChange={e => setEndDate(e.target.value)} style={styles.input} />
-      <button onClick={fetchLocations} style={styles.btnPrimary} disabled={loading}>
+      <button onClick={() => fetchLocations()} style={styles.btnPrimary} disabled={loading}>
         {loading ? 'Buscando...' : '🔍 Buscar trajeto'}
       </button>
       <div style={styles.countInfo}>{locations.length} pontos encontrados</div>
