@@ -71,12 +71,13 @@ export default function MapView({ locations, currentLocation, geofences, picking
         <Polyline positions={path} color="#764ba2" weight={3} opacity={0.7} />
       )}
 
-      <Pane name="green-pin-pane" style={{ zIndex: 9999 }}>
+      <Pane name="green-pin-pane" style={{ zIndex: 9999 }} />
+      <Pane name="green-pin-tooltip-pane" style={{ zIndex: 10000 }}>
         {currentLocation && (
           <>
             <FlyTo lat={currentLocation.latitude} lng={currentLocation.longitude} />
             <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon} interactive={!pickingGeofence} pane="green-pin-pane">
-              <Tooltip permanent direction="top" offset={[0, -18]} opacity={1} pane="green-pin-pane">
+              <Tooltip permanent direction="top" offset={[0, -18]} opacity={1} pane="green-pin-tooltip-pane">
                 {format(new Date(currentLocation.timestamp), "HH:mm", { locale: ptBR })}
               </Tooltip>
               <Popup>
