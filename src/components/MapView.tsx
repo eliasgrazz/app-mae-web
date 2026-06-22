@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, Tooltip, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, Tooltip, Pane, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { Location, Geofence } from '@/lib/supabase'
@@ -71,21 +71,23 @@ export default function MapView({ locations, currentLocation, geofences, picking
         <Polyline positions={path} color="#764ba2" weight={3} opacity={0.7} />
       )}
 
-      {currentLocation && (
-        <>
-          <FlyTo lat={currentLocation.latitude} lng={currentLocation.longitude} />
-          <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon} interactive={!pickingGeofence} zIndexOffset={2000}>
-            <Tooltip permanent direction="top" offset={[0, -18]} opacity={1}>
-              {format(new Date(currentLocation.timestamp), "HH:mm", { locale: ptBR })}
-            </Tooltip>
-            <Popup>
-              <strong>Posição atual</strong><br />
-              {format(new Date(currentLocation.timestamp), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
-              {currentLocation.battery_level != null && `Bateria: ${currentLocation.battery_level}%`}
-            </Popup>
-          </Marker>
-        </>
-      )}
+      <Pane name="green-pin-pane" style={{ zIndex: 9999 }}>
+        {currentLocation && (
+          <>
+            <FlyTo lat={currentLocation.latitude} lng={currentLocation.longitude} />
+            <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon} interactive={!pickingGeofence} pane="green-pin-pane">
+              <Tooltip permanent direction="top" offset={[0, -18]} opacity={1} pane="green-pin-pane">
+                {format(new Date(currentLocation.timestamp), "HH:mm", { locale: ptBR })}
+              </Tooltip>
+              <Popup>
+                <strong>Posição atual</strong><br />
+                {format(new Date(currentLocation.timestamp), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}<br />
+                {currentLocation.battery_level != null && `Bateria: ${currentLocation.battery_level}%`}
+              </Popup>
+            </Marker>
+          </>
+        )}
+      </Pane>
 
       {!pickingGeofence && locations.slice(0, -1).map(loc => (
         <Marker key={loc.id} position={[loc.latitude, loc.longitude]} icon={historyIcon} zIndexOffset={500}>
