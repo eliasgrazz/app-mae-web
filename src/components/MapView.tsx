@@ -76,7 +76,7 @@ export default function MapView({ locations, currentLocation, geofences, picking
           <>
             <FlyTo lat={currentLocation.latitude} lng={currentLocation.longitude} />
             <Marker position={[currentLocation.latitude, currentLocation.longitude]} icon={currentIcon} interactive={!pickingGeofence} pane="green-pin-pane">
-              <Tooltip permanent direction="top" offset={[0, -18]} opacity={1} pane="green-pin-pane">
+              <Tooltip permanent direction="center" offset={[0, -29]} opacity={1} pane="green-pin-pane">
                 {format(new Date(currentLocation.timestamp), "HH:mm", { locale: ptBR })}
               </Tooltip>
               <Popup>
